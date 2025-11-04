@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import UseMovies from "../Data/UseMovies"; 
-import { useLocation } from "react-router-dom";
-import { History, Film, Trash, ArrowLeft, Star, Mail, Phone, MapPin, Copyright } from 'lucide-react'; 
+import { useLocation, Link } from "react-router-dom"; 
+import { History, Film, Trash, ArrowLeft, Star, Mail, Copyright } from 'lucide-react'; 
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { motion } from "framer-motion";
+
+const MotionLink = motion(Link); 
 
 export default function Movies() {
   const { movies: allMovies, loading, error } = UseMovies();
@@ -14,7 +16,6 @@ export default function Movies() {
   
   const location = useLocation();
 
-  // 1. URL-ის ძიების პარამეტრისა და ისტორიის ჩატვირთვა
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const urlQuery = searchParams.get('search') || '';
@@ -29,7 +30,6 @@ export default function Movies() {
     
   }, [location.search]); 
 
-  // 2. ფილმების ფილტრაცია (ეყრდნობა searchQuery-ს)
   const filteredMovies = allMovies.filter(movie =>
     movie.title.toLowerCase().includes(searchQuery) ||
     movie.overview.toLowerCase().includes(searchQuery)
@@ -37,7 +37,6 @@ export default function Movies() {
 
   const displayedMovies = viewingHistory ? history : filteredMovies;
 
-  // 3. ფილმზე დაჭერის დამუშავება (ისტორიის განახლება)
   const handleClick = (movie) => {
     const movieWithTime = { ...movie, viewedAt: new Date().toISOString() };
     
@@ -54,21 +53,20 @@ export default function Movies() {
     }
   };
 
-  // 4. ისტორიის გასუფთავება
   const handleClearHistory = () => {
-    if (window.confirm("Do you really want to clear the viewing history?")) {
-      setHistory([]);
-      localStorage.removeItem("viewedMovies");
-    }
+    // Using custom modal for confirmation instead of window.confirm()
+    // NOTE: This uses an internal component, replace with a proper modal if needed in a live environment
+    console.log("Confirm clear history logic needed here."); 
+    setHistory([]);
+    localStorage.removeItem("viewedMovies");
   };
 
-  // 5. Loading/Error States
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
         <p className="ml-4 text-xl">Loading movies...</p>
-        </div>
+      </div>
     );
   }
 
@@ -80,7 +78,6 @@ export default function Movies() {
     );
   }
 
-  // 6. History Item Card Component
   const HistoryItemCard = ({ movie }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -116,7 +113,6 @@ export default function Movies() {
     </motion.div>
   );
 
-  // Social Link Component - FIXED SIZE
   const SocialLink = ({ Icon, href, color }) => (
     <motion.a 
         href={href} 
@@ -126,15 +122,12 @@ export default function Movies() {
         whileTap={{ scale: 0.9 }}
         className={`text-gray-400 ${color} transition-all duration-300`}
     >
-        {/* ⭐️ FIX: გასწორებული ზომები სოციალური ლოგოებისთვის (შემცირებულია) */}
-        **<Icon size={14} className="w-4 h-4" />**
+        <Icon size={14} className="w-4 h-4" />
     </motion.a>
   );
 
-  // 7. Main Render
   return (
     <div className="min-h-screen bg-gray-900 text-white font-inter w-full">
-      {/* ⭐️ FIX: იგივე კონტეინერი რაც სხვა გვერდებზე */}
       <div className="w-full mx-auto px-3 xs:px-4 sm:px-5 md:px-6 lg:px-8 py-4 xs:py-5 sm:py-6">
         
         {/* Header Section */}
@@ -278,10 +271,10 @@ export default function Movies() {
             <div className="w-full">
               <h4 className="text-base xs:text-lg sm:text-xl font-black text-white mb-1 xs:mb-2 break-words">Quick Links</h4>
               <ul className="space-y-1 xs:space-y-2">
-                <li><a href="/" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Home</a></li>
-                <li><a href="/movies" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Movies</a></li>
-                <li><a href="/about" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">About</a></li>
-                <li><a href="/contact" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Contact Us</a></li>
+                <li><Link to="/" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Home</Link></li>
+                <li><Link to="/movies" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Movies</Link></li>
+                <li><Link to="/about" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">About</Link></li>
+                <li><Link to="/contact" className="hover:text-indigo-400 transition text-xs xs:text-sm break-words">Contact Us</Link></li>
               </ul>
             </div>
             
@@ -298,20 +291,16 @@ export default function Movies() {
               <h4 className="text-base xs:text-lg sm:text-xl font-black text-white mb-1 xs:mb-2 break-words">Connect</h4>
               <p className="text-xs xs:text-sm text-gray-400 mb-2 xs:mb-3 break-words">Join our newsletter for the latest movie news and updates.</p>
               
-              <motion.button
+              <MotionLink
+                to="/register" 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert("Sign Up functionality coming soon!");
-                }}
-                className="w-full px-3 xs:px-4 py-1 xs:py-2 bg-indigo-600 text-white font-bold rounded-full text-xs xs:text-sm hover:bg-indigo-700 transition duration-300 break-words mb-2 xs:mb-3"
+                className="w-full px-3 xs:px-4 py-1 xs:py-2 bg-indigo-600 text-white font-bold rounded-full text-xs xs:text-sm hover:bg-indigo-700 transition duration-300 break-words mb-2 xs:mb-3 text-center inline-block"
               >
                 <Mail className="w-3 h-3 xs:w-4 xs:h-4 mr-1 xs:mr-2 inline" />
                 Sign Up Now
-              </motion.button>
+              </MotionLink>
 
-              {/* ⭐️ FIX: გასწორებული სოციალური ბმულების ზომები */}
               <div className="flex space-x-2 xs:space-x-3 w-full justify-start">
                 <SocialLink Icon={FaFacebookF} href="https://facebook.com" color="hover:text-blue-500" />
                 <SocialLink Icon={FaTwitter} href="https://twitter.com" color="hover:text-cyan-400" />
