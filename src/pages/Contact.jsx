@@ -152,7 +152,7 @@ export default function Contact() {
                 >
                     <h4 className="font-semibold text-xl text-white mb-3">Connect With Us</h4>
                     <div className="flex space-x-4">
-                        <SocialLink Icon={FaFacebookF} href="https://www.facebook.com/robert.fasanidze.1" color="hover:text-blue-500" />
+                        <SocialLink Icon={FaFacebookF} href="https://www.facebook.com/stories/1098103228539609/?source=profile_highlight" color="hover:text-blue-500" />
                         <SocialLink Icon={FaTwitter} href="https://twitter.com" color="hover:text-cyan-400" />
                         <SocialLink Icon={FaInstagram} href="https://instagram.com" color="hover:text-pink-500" />
                         <SocialLink Icon={FaLinkedinIn} href="https://linkedin.com" color="hover:text-blue-700" />
